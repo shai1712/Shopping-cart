@@ -53,7 +53,7 @@ router.get('/getOneItem/:id', async (req, res) => { //getOne
             
     })
     
-    return res.status(500).send({message: 'wrong id!'})
+    return res.status(500).send()
     
 })
 router.get('/getAllItems', async (req, res) => {//getAll
