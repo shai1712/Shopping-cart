@@ -6,12 +6,14 @@ const categorySchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
+        unique: true,
         trim: true
     },
    
     items: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Items'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Items',
+        required: true
     },
    
 });

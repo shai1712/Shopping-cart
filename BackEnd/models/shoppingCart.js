@@ -1,31 +1,23 @@
 const validator = require('validator')
 const mongoose = require('mongoose')
-const Orders = require('../models/order')
-const Users = require('../models/user')
 
 const shoppingCartSchema = new mongoose.Schema({
     
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
-    products: [{
-        productId: {
-        type: String
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Item', 
+        required: true
         },
     quantity:{
         type: Number,
         default: 1
         },
-    }],
-    orders: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Orders'
-    },
-    User: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Users'
-    },
+    
 });
 
 const shoppingCart = mongoose.model('shoppingCart', shoppingCartSchema);

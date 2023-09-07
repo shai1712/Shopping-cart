@@ -43,29 +43,45 @@ router.post('/items',async (req, res) => { //create
     
 });
 router.get('/getOneItem/:id', async (req, res) => { //getOne
-    const item_id = (req.params.id)
+    // const item_id = (req.params.id)
 
-    Item.findById(item_id).then(item => {
-        if (!item) {
-            return res.status(404).send('item not found!')
-        }
+    // Item.findById(item_id).then(item => {
+    //     if (!item) {
+    //         return res.status(500).send(`The item ${item_id} not found!`)
+    //     }
+    //     return res.status(200).send(item);
+    // })
+
+    const allItems = await Item.find({});
+    let item;
+    let flag = false
+    allItems.find(element => {
+            if ((element._id == req.params.id)) {
+                item = element;
+                flag = true
+            }
+        });
+    if (flag) {
         return res.status(200).send(item);
-            
-    })
-    
-    return res.status(500).send()
-    
+    }
+    return res.status(500).send(`The item ${req.params.id} not found!`);
 })
 router.get('/getAllItems', async (req, res) => {//getAll
-    const items = await Item.find({})
-    return res.send(items)
+   
+    const items = await Item.find({});
+
+        if (items == null || items.length === 0) {
+            return res.status(500).send(`There is no items to show.`)
+        }
+        return res.status(201).send(items)        
 });
 router.delete('/items/:id', async (req, res) => {//delete
     const item_id = req.params.id;
+    
     try {
         const item = await Item.findByIdAndDelete(item_id)
         if (!item) {
-            return res.status(404).send();
+            return res.status(404).send('No items are found!');
         }
         return res.status(201).send(`The item ${item.userId} deleted!` +'\n'+ item);
     }

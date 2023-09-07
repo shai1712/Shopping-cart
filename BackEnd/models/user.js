@@ -55,15 +55,6 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true }
 );
 
-
-userSchema.methods.toJSON = function()  {
-    const user = this;
-    const userObject = user.toObject();
-
-    delete userObject.password;
-    delete userObject.tokens;
-}
-
 userSchema.methods.generateAuthToken = async function()  {
     const user = this;
     const token = jwt.sign({ _id: user._id.toString() }, "thisismypass")

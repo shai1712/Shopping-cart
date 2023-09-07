@@ -1,8 +1,15 @@
 
-
 const isValidString = (myStr) => {
     let results = false;
     if (myStr !== undefined && myStr !== '') {
+        results = true;
+    }
+    return results;
+}
+
+const isValidValue = (val) => {
+    let results = false;
+    if (val !== '') {
         results = true;
     }
     return results;
@@ -31,6 +38,13 @@ const isValidPrice = (value) => {
     }
     return results
 }
+const isValidTotalAmount = (value) => {
+    let results = false;
+    if(value>=0) {
+        results = true;
+    }
+    return results
+}
 
 const isValidEmail = (value) => {
     let results = false;
@@ -44,4 +58,4 @@ const isValidEmail = (value) => {
 
 const isAvailable = (quantity) => quantity > 0 ? true : false; 
 
-module.exports = {isValidPhoneNumber,isValidPrice, isValidEmail, isValidPassword,isAvailable, isValidString};
+module.exports = {isValidPhoneNumber,isValidPrice,isValidTotalAmount,isValidValue, isValidEmail, isValidPassword,isAvailable, isValidString};
