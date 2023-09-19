@@ -3,17 +3,17 @@ const mongoose = require('mongoose')
 
 const shoppingCartSchema = new mongoose.Schema({
     
-    userId: {
+    userId: { // user id
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    productId: {
+    productId: { // all the products in shopping cart
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Item', 
         required: true
         },
-    quantity:{
+    quantity:{ //number of shopping cart
         type: Number,
         default: 1
         },

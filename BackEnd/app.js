@@ -1,4 +1,6 @@
-const express  = require('express');
+const express = require('express');
+const User = require('./models/user')
+const Item  = require('./models/item')
 
 require('./db/mongoose')
 const userRouter = require('./routes/user')
@@ -27,5 +29,13 @@ app.listen(port, () => {
     console.log(`server started on port ${port}`)
 });
 
+// const main = async () => {
 
+//     const item = await Item.findById('64f8a92a9d8e95397faef6c6').populate('userId')
+//     console.log(item.userId)
+
+//     const user = await User.findById('64fdaba6eb966a64cae56903').populate('items')
+//     console.log(user.items)
+// }
+// main()
 

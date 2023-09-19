@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 
 const userSchema = new mongoose.Schema({
     
-    userName: {
+    userName: { 
         type: String,
         required: true,
         trim: true,
@@ -55,10 +55,16 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true }
 );
 
+userSchema.virtual('items', {
+    ref: 'Item',
+    localField: '_id',
+    foreignField: 'userId'
+})
+
 userSchema.methods.generateAuthToken = async function()  {
     const user = this;
-    const token = jwt.sign({ _id: user._id.toString() }, "thisismypass")
-    
+    const token = jwt.sign({ _id: user._id.toString() }, "thisismyshoppingcart")
+    console.log(token)
     user.tokens = user.tokens.concat({ token })
     await user.save();
     return token

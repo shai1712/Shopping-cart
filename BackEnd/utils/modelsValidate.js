@@ -1,3 +1,16 @@
+const User = require('../models/user')
+
+
+const isExistingUser = async ({userName}) => {
+    console.log(userName)
+    const existUsername = await User.findOne( userName )
+   console.log(existUsername)
+   
+}
+const isExistingEmail  = async({email}) => {
+    User.findOne({ email }) ? true: false
+   
+}
 
 const isValidString = (myStr) => {
     let results = false;
@@ -58,4 +71,4 @@ const isValidEmail = (value) => {
 
 const isAvailable = (quantity) => quantity > 0 ? true : false; 
 
-module.exports = {isValidPhoneNumber,isValidPrice,isValidTotalAmount,isValidValue, isValidEmail, isValidPassword,isAvailable, isValidString};
+module.exports = {isValidPhoneNumber,isValidPrice,isExistingEmail,isExistingUser,isValidTotalAmount,isValidValue, isValidEmail, isValidPassword,isAvailable, isValidString};

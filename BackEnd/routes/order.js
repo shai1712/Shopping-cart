@@ -2,6 +2,7 @@ const express = require('express');
 const Order = require('../models/order');
 const User = require('../models/user');
 const Item = require('../models/item');
+const auth = require('../middleware/auth') 
 const router = new express.Router();
 const validator = require('../utils/modelsValidate')
 const  definitions  = require('../utils/definitions');
@@ -23,12 +24,6 @@ router.post('/order',async (req, res) => { //create
     //     return res.status(400).send(e)
     // }
     const order = new Order(req.body)
-    console.log(order)
-    console.log(order.items[0])
-    console.log(order.items[0].productId)
-    console.log(order.items[0].productName)
-    console.log(order.items[0].quantity)
-    console.log(order.items[0].price)
     if (
         !validator.isValidValue(order.userId) ||
         !validator.isValidValue(order.items[0]) ||
@@ -80,19 +75,25 @@ router.get('/getOneOrder/:id', async (req, res) => { //getOne
     // } catch (e) {
     //     return res.status(500).send()
     // }
-    const allOrders = await Order.find({});
-    let order;
-    let flag = false
-    allOrders.find(element => {
-            if ((element._id == req.params.id)) {
-                order = element;
-                flag = true
-            }
-        });
-    if (flag) {
-        return res.status(200).send(order);
+    if (!(req.params.id.match(/^[0-9a-fA-F]{24}$/))) { //check if this a valid ObjectId
+        return res.status(404).send(`The id ${req.params.id} of your order are not found!`);
     }
-    return res.status(500).send(`The id ${req.params.id} of your order are not found!`);
+    try {
+        const findOrder = await Order.findById(req.params.id);
+        return res.status(200).send(findOrder);
+    } catch (e) {
+        return res.status(500).send();
+    }
+   
+})
+router.get('/getOrders',auth, async (req, res) => {
+    console.log(req.user.id)
+    const orders = await Order.find({userId: req.user.id})
+    console.log(orders)
+    if (orders == null || orders.length === 0) {
+        return res.status(500).send(`There is no orders to show.`)
+    }
+        return res.status(201).send(orders) 
 })
 router.get('/getAllOrder', async (req, res) => {//getAll
     // const orders = await Order.find({})
@@ -109,6 +110,9 @@ router.delete('/order/:id', async (req, res) => {//delete
     const order_id = req.params.id;
 
     try {
+        if (!(order_id.match(/^[0-9a-fA-F]{24}$/))) { //check if this a valid ObjectId
+            return res.status(404).send({ message: 'Order not found' });
+        }
         const order = await Order.findByIdAndDelete(order_id)
         if (!order) {
             return res.status(404).send('No order are found!');
@@ -120,22 +124,51 @@ router.delete('/order/:id', async (req, res) => {//delete
         }
 });
 router.patch('/order/:id', async (req, res) => { //update
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['userId','products','quantity']
-   
-    const isValidOperation = updates.every((update) => {
-        allowedUpdates.includes(update)
-    })
-    if (isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
+    const orderId = req.params.id;
+    // const { beforeTax, afterTax, totalAmount } = req.body;
     try {
-        updates.forEach((update) => (req.order[update] = req.body[update]))
-        await req.order.save()
-        res.send(req.order)
-    } catch (e) {
-        return res.statusMessage(500).send(e)
-    }
+        if (!(orderId.match(/^[0-9a-fA-F]{24}$/))) { //check if this a valid ObjectId
+            return res.status(404).send({ message: 'Order not found' });
+        }
+        // const orderToUpdate = await Order.findById(orderId);
+        // if (beforeTax !== orderToUpdate.beforeTax) {
+        //     if (!(validator.isValidString(beforeTax))) {
+        //         res.status(500).send(definitions.MISSING_FIELDS);
+        //         return;
+        //     } else {
+        //         orderToUpdate.beforeTax = beforeTax
+        //     }
+          
+        // }
+        // if (afterTax !== orderToUpdate.afterTax) {
+        //     if (!(validator.isValidString(afterTax))) {
+        //         res.status(500).send(definitions.MISSING_FIELDS);
+        //         return;
+        //     } else {
+        //         orderToUpdate.afterTax = afterTax
+        //     }
+          
+        // }
+        // if (totalAmount !== orderToUpdate.totalAmount) {
+        //     if (!(validator.isValidString(totalAmount))) {
+        //         res.status(500).send(definitions.MISSING_FIELDS);
+        //         return;
+        //     } else if (!(validator.isValidTotalAmount(totalAmount))) {
+        //         res.status(500).send(definitions.TOTAL_AMOUNT_NEGATIVE);
+        //         return; 
+        //     } else {
+        //         orderToUpdate.totalAmount = totalAmount
+        //     }
+          
+        // }
+        // Find the user by ID and update the specified fields
+        // const order = await Order.findByIdAndUpdate(orderId, updatedFields, { new: true });
+        await orderToUpdate.save();
+        return res.send({ message: 'User updated successfully', orderToUpdate });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
+      }
 })
 
 

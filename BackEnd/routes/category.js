@@ -41,20 +41,16 @@ router.get('/getOneCategory/:id', async (req, res) => { //getOne
     // } catch (e) {
     //     return res.status(500).send()
     // }
-
-    const allCategory = await Category.find({});
-    let category;
-    let flag = false
-    allCategory.find(element => {
-            if ((element._id == req.params.id)) {
-                category = element;
-                flag = true
-            }
-        });
-    if (flag) {
-        return res.status(200).send(category);
+    if (!(req.params.id.match(/^[0-9a-fA-F]{24}$/))) { //check if this a valid ObjectId
+        return res.status(404).send(`The id ${req.params.id} of your category are not found!`);
     }
-    return res.status(500).send(`The id ${req.params.id} of your category are not found!`);
+    try {
+        const findCategory = await Category.findById(req.params.id);
+        return res.status(200).send(findCategory);
+    } catch (e) {
+        return res.status(500).send();
+    }
+   
 })
 router.get('/getAllCategories', async (req, res) => {//getAll
     // const categories = await Category.find({})
@@ -72,6 +68,9 @@ router.delete('/categories/:id', async (req, res) => {//delete
     const category_id = req.params.id;
     
     try {
+        if (!(category_id.match(/^[0-9a-fA-F]{24}$/))) { //check if this a valid ObjectId
+            return res.status(404).send({ message: 'Category not found' });
+        }
         const category = await Category.findByIdAndDelete(category_id)
         if (!category) {
             return res.status(404).send('No categories are found!');
@@ -83,21 +82,31 @@ router.delete('/categories/:id', async (req, res) => {//delete
         }
 });
 router.patch('/category/:id', async (req, res) => { //update
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['title']
-    const isValidOperation = updates.every((update) => {
-        allowedUpdates.includes(update)
-    })
-    if (isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
+    const categoryId = req.params.id;
+    const {title} = req.body;
     try {
-        updates.forEach((update) => (req.category[update] = req.body[update]))
-        await req.category.save()
-        res.send(req.category)
-    } catch (e) {
-        return res.statusMessage(500).send(e)
-    }
+        if (!(categoryId.match(/^[0-9a-fA-F]{24}$/))) { //check if this a valid ObjectId
+            return res.status(404).send({ message: 'Category not found' });
+        }
+        // Find the user by ID and update the specified fields
+        const categoryToUpdate = await Category.findById(categoryId);
+        console.log(title)
+        if (title !== undefined && title !== categoryToUpdate.title ) {
+            if (validator.isValidString(title)) {
+                categoryToUpdate.title = title
+            } else {
+                res.status(500).send(definitions.MISSING_FIELDS);
+                return;
+            }
+        }
+        await categoryToUpdate.save();
+        return res.send({ message: 'Category updated successfully', categoryToUpdate });
+        // const category = await Category.findByIdAndUpdate(categoryId, updatedFields, { new: true });
+        // return res.send({ message: 'User updated successfully', category });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
+      }
 })
 
 

@@ -1,16 +1,15 @@
-const validator = require('validator')
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
     
-    userId: {
+    userId: { // id of the user 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // Reference to the User model
         required: true,
       },
       items: [
         {
-          productId: {
+          productId: { // id of the product
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Item', // Reference to the Item model
             required: true,
@@ -20,7 +19,7 @@ const orderSchema = new mongoose.Schema({
                 required: true,
                 trim: true
             },
-          quantity: {
+          quantity: { // number of the product
             type: Number,
             required: true,
             min: 1, // Ensure the quantity is at least 1

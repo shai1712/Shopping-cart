@@ -3,10 +3,6 @@ const mongoose = require('mongoose')
 const Category = require('../models/category')
 
 const itemSchema = new mongoose.Schema({
-    userId: {
-        type: String,
-        required: true
-    },
     title: {
         type: String,
         required: true,
@@ -19,19 +15,19 @@ const itemSchema = new mongoose.Schema({
     image: {
         type: String,
         required: true
-       
     }
     ,
-    price: {
+    price: { // price of the product
         type: Number,
         required: true,
       
     },
-    category: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Category'
+    category: { // id of the category 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true
     },
-    quantity: {
+    quantity: { // number of the product itself 
         type: Number,
         required: true,
         default: false,
