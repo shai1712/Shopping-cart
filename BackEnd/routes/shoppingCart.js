@@ -109,6 +109,27 @@ router.delete('/shoppingCart/:id',auth, async (req, res) => {//delete
         }
 
 });
+router.delete('/getProduct/:id', auth, async (req, res) => {
+    
+    try {
+        if (!((req.params.id).match(/^[0-9a-fA-F]{24}$/))) { //check if this a valid ObjectId
+            return res.status(404).send({ message: 'Product id not found' });
+        }
+
+        const deleteProdFromDb = await ShoppingCart.findOneAndDelete({userId: req.user.id,productId: req.params.id })
+        // const deleteProdFromDb = ShoppingCart.findByIdAndRemove(productId);
+        console.log(deleteProdFromDb)
+        if (!deleteProdFromDb) {
+            return res.status(404).send('No product are found!');
+        }
+        return res.status(201).send();
+
+        // return res.status(201).send(`The product ${req.params.id} deleted!` +'\n'+ deleteProdFromDb);
+
+    } catch (e) {
+        return res.status(500).send();
+    }
+})
 router.patch('/shoppingCart/:id',auth, async (req, res) => { //update
 
     const shoppingCartId = req.params.id;
